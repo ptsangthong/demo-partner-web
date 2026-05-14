@@ -244,12 +244,12 @@ export default function App() {
               </select>
             </FieldRow>
 
-            <FieldRow id="device_id" label="device_id" required>
-              <Input id="device_id" name="device_id" {...deviceId} />
-            </FieldRow>
-
             <FieldRow id="device_model" label="device_model" required>
               <Input id="device_model" name="device_model" {...deviceModel} />
+            </FieldRow>
+
+            <FieldRow id="device_id" label="device_id" required>
+              <Input id="device_id" name="device_id" {...deviceId} />
             </FieldRow>
 
             <SectionDivider label="Optional" />
