@@ -142,7 +142,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-dvh bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-start justify-center p-4 sm:p-8 sm:py-12">
+    <div className="min-h-dvh bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-start justify-center p-2 sm:p-8 sm:py-12">
       <Card className="w-full max-w-[520px] shadow-[0_2px_8px_rgba(0,0,0,0.08),0_8px_32px_rgba(0,0,0,0.06)] border-border/60 animate-fade-in">
         <CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3">
           <div className="flex items-center justify-between gap-2">
