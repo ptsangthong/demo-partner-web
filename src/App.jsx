@@ -145,23 +145,7 @@ export default function App() {
     <div className="min-h-dvh bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-start justify-center p-4 sm:p-8 sm:py-12">
       <Card className="w-full max-w-[520px] shadow-[0_2px_8px_rgba(0,0,0,0.08),0_8px_32px_rgba(0,0,0,0.06)] border-border/60 animate-fade-in">
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <Badge variant="warning" className="font-mono text-[10px] tracking-widest uppercase">
-              DEV / QA ONLY
-            </Badge>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleReset}
-              className="h-7 px-2.5 font-mono text-[11px] gap-1.5 border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
-            >
-              <RotateCcw className="h-3 w-3" />
-              Reset
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-2 mt-3">
+          <div className="flex items-center justify-between gap-2">
             <div>
               <h2 className="font-semibold text-[17px] text-foreground leading-tight">Mock Partner Web</h2>
               <p className="text-[12px] text-muted-foreground font-sans mt-0.5">
@@ -169,6 +153,16 @@ export default function App() {
                 <code className="text-[11px] bg-muted px-1 py-0.5 rounded font-mono">/partner/binding</code>
               </p>
             </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleReset}
+              className="h-7 px-2.5 font-mono text-[11px] gap-1.5 shrink-0 border-destructive/40 text-destructive hover:bg-destructive hover:text-destructive-foreground hover:border-destructive"
+            >
+              <RotateCcw className="h-3 w-3" />
+              Reset
+            </Button>
           </div>
         </CardHeader>
 
@@ -191,8 +185,7 @@ export default function App() {
             </Button>
 
           <form id="bindingForm" method="POST" onSubmit={handleSubmit}>
-            <SectionDivider label="Identity" />
-
+            <SectionDivider label="Fields" />
             <FieldRow
               id="partner_token"
               label="partner_token"
@@ -228,7 +221,6 @@ export default function App() {
               id="redirect_uri"
               label="redirect_uri"
               required
-              hint="OAuth callback URI. Must match a pre-registered URI for the client_id."
             >
               <Input id="redirect_uri" name="redirect_uri" type="url" {...redirectUri} />
             </FieldRow>
@@ -244,8 +236,6 @@ export default function App() {
             <FieldRow id="code_challenge_method" label="code_challenge_method" required>
               <Input id="code_challenge_method" name="code_challenge_method" {...codeChallengeMethod} />
             </FieldRow>
-
-            <SectionDivider label="Device" />
 
             <FieldRow id="device" label="device" required>
               <select
@@ -288,12 +278,6 @@ export default function App() {
               id="scope"
               label="scope"
               required={false}
-              hint={
-                <>
-                  OAuth scope. Defaults to{" "}
-                  <code className="text-[11px] bg-muted px-1 rounded font-mono">public_profile</code>.
-                </>
-              }
             >
               <Input id="scope" name="scope" {...scope} />
             </FieldRow>
