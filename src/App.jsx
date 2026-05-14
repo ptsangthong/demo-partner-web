@@ -144,11 +144,11 @@ export default function App() {
   return (
     <div className="min-h-dvh bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 flex items-start justify-center p-4 sm:p-8 sm:py-12">
       <Card className="w-full max-w-[520px] shadow-[0_2px_8px_rgba(0,0,0,0.08),0_8px_32px_rgba(0,0,0,0.06)] border-border/60 animate-fade-in">
-        <CardHeader className="pb-3">
+        <CardHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3">
           <div className="flex items-center justify-between gap-2">
-            <div>
-              <h2 className="font-semibold text-[17px] text-foreground leading-tight">Mock Partner Web</h2>
-              <p className="text-[12px] text-muted-foreground font-sans mt-0.5">
+            <div className="min-w-0">
+              <h2 className="font-semibold text-[15px] sm:text-[17px] text-foreground leading-tight">Mock Partner Web</h2>
+              <p className="text-[11px] sm:text-[12px] text-muted-foreground font-sans mt-0.5">
                 Simulates a partner webview POSTing to{" "}
                 <code className="text-[11px] bg-muted px-1 py-0.5 rounded font-mono">/partner/binding</code>
               </p>
@@ -166,7 +166,7 @@ export default function App() {
           </div>
         </CardHeader>
 
-        <CardContent className="pt-0">
+        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0">
           {/* Submit URL */}
           <div className="rounded-lg bg-sky-50 border border-sky-200 p-3 mb-5">
             <FieldRow id="submitUrl" label="Submit URL" required>
@@ -177,15 +177,9 @@ export default function App() {
                 {...submitUrl}
               />
             </FieldRow>
-            
           </div>
-          <Button type="submit" form="bindingForm" className="w-full h-11 font-semibold text-[14px] gap-2">
-              <Send className="h-4 w-4" />
-              Submit Binding Request
-            </Button>
 
           <form id="bindingForm" method="POST" onSubmit={handleSubmit}>
-            <SectionDivider label="Fields" />
             <FieldRow
               id="partner_token"
               label="partner_token"
@@ -281,6 +275,11 @@ export default function App() {
             >
               <Input id="scope" name="scope" {...scope} />
             </FieldRow>
+
+            <Button type="submit" className="w-full h-11 font-semibold text-[14px] gap-2 mt-2">
+              <Send className="h-4 w-4" />
+              Submit Binding Request
+            </Button>
           </form>
         </CardContent>
       </Card>
