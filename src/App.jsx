@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ClipboardPaste, RotateCcw, Send, Link2, Lock } from "lucide-react";
+import { ClipboardPaste, RotateCcw, Send, Link2, Lock, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const NS = "mockPartner.";
 
@@ -37,6 +38,16 @@ function persist(key, value) {
   } else {
     localStorage.setItem(NS + key, value);
   }
+}
+
+function loadBool(key, defaultValue) {
+  const v = localStorage.getItem(NS + key);
+  if (v === null) return defaultValue;
+  return v === "true";
+}
+
+function persistBool(key, value) {
+  localStorage.setItem(NS + key, String(value));
 }
 
 function useField(name) {
@@ -84,13 +95,13 @@ function FieldRow({ id, label, required, hint, action, children }) {
   );
 }
 
-function ChannelHeader({ icon: Icon, tone, kind, title, subtitle }) {
+function ChannelHeader({ icon: Icon, tone, kind, title, subtitle, className }) {
   const tones = {
     amber: "bg-amber-100 text-amber-900 ring-amber-200",
     slate: "bg-slate-200 text-slate-700 ring-slate-300",
   };
   return (
-    <div className="flex items-center gap-2.5 mb-3">
+    <div className={cn("flex items-center gap-2.5", className ?? "mb-3")}>
       <span
         className={`inline-flex items-center gap-1.5 rounded-md px-2 py-1 ring-1 ring-inset font-mono text-[10px] font-bold tracking-[0.08em] uppercase ${tones[tone]}`}
       >
@@ -119,6 +130,15 @@ export default function App() {
   const latlong = useField("latlong");
   const lang = useField("lang");
   const scope = useField("scope");
+  const [queryOpen, setQueryOpen] = useState(() => loadBool("queryOpen", true));
+
+  const toggleQueryOpen = useCallback(() => {
+    setQueryOpen((open) => {
+      const next = !open;
+      persistBool("queryOpen", next);
+      return next;
+    });
+  }, []);
 
   const oauthEntries = useMemo(
     () => ({
@@ -181,6 +201,8 @@ export default function App() {
     latlong.reset(DEFAULTS.latlong);
     lang.reset(DEFAULTS.lang);
     scope.reset(DEFAULTS.scope);
+    setQueryOpen(true);
+    persistBool("queryOpen", true);
   }
 
   function handleSubmit(e) {
@@ -272,6 +294,115 @@ export default function App() {
               </FieldRow>
             </div>
 
+            {/* Query String — OAuth params */}
+            <div className="rounded-lg border-2 border-slate-200 bg-slate-50/60 p-3.5 mb-5">
+              <button
+                type="button"
+                onClick={toggleQueryOpen}
+                aria-expanded={queryOpen}
+                className="w-full flex items-center justify-between gap-3 text-left rounded-md -m-1 p-1 hover:bg-slate-100/80 transition-colors"
+              >
+                <ChannelHeader
+                  icon={Link2}
+                  tone="slate"
+                  kind="Query String"
+                  title="OAuth parameters"
+                  subtitle="appended to the endpoint URL as ?key=value"
+                  className="mb-0 min-w-0 flex-1"
+                />
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200",
+                    queryOpen && "rotate-180",
+                  )}
+                />
+              </button>
+
+              {queryOpen && (
+                <div className="mt-3 pt-3 border-t border-slate-200/80">
+                  <FieldRow id="client_id" label="client_id" required>
+                    <Input id="client_id" name="client_id" className="bg-white" {...clientId} />
+                  </FieldRow>
+
+                  <FieldRow id="redirect_uri" label="redirect_uri" required>
+                    <Input id="redirect_uri" name="redirect_uri" type="url" className="bg-white" {...redirectUri} />
+                  </FieldRow>
+
+                  <FieldRow id="state" label="state" required>
+                    <Input id="state" name="state" className="bg-white" {...state} />
+                  </FieldRow>
+
+                  <FieldRow id="code_challenge" label="code_challenge" required>
+                    <Input id="code_challenge" name="code_challenge" className="bg-white" {...codeChallenge} />
+                  </FieldRow>
+
+                  <FieldRow id="code_challenge_method" label="code_challenge_method" required>
+                    <Input
+                      id="code_challenge_method"
+                      name="code_challenge_method"
+                      className="bg-white"
+                      {...codeChallengeMethod}
+                    />
+                  </FieldRow>
+
+                  <FieldRow id="device" label="device" required>
+                    <select
+                      id="device"
+                      name="device"
+                      className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      {...device}
+                    >
+                      <option value="web">web</option>
+                      <option value="iphone">iphone</option>
+                      <option value="android">android</option>
+                    </select>
+                  </FieldRow>
+
+                  <FieldRow id="device_model" label="device_model" required>
+                    <Input id="device_model" name="device_model" className="bg-white" {...deviceModel} />
+                  </FieldRow>
+
+                  <FieldRow id="device_id" label="device_id" required>
+                    <Input id="device_id" name="device_id" className="bg-white" {...deviceId} />
+                  </FieldRow>
+
+                  <div className="flex items-center gap-3 mt-5 mb-3">
+                    <span className="text-[10px] font-mono font-bold tracking-[0.12em] uppercase text-slate-500 shrink-0">
+                      Optional
+                    </span>
+                    <div className="h-px flex-1 bg-slate-200" />
+                  </div>
+
+                  <FieldRow id="latlong" label="latlong" required={false}>
+                    <Input
+                      id="latlong"
+                      name="latlong"
+                      pattern="-?\d+(\.\d+)?,-?\d+(\.\d+)?"
+                      placeholder="lat,long"
+                      className="bg-white"
+                      {...latlong}
+                    />
+                  </FieldRow>
+
+                  <FieldRow id="lang" label="lang" required={false}>
+                    <select
+                      id="lang"
+                      name="lang"
+                      className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      {...lang}
+                    >
+                      <option value="en">en</option>
+                      <option value="th">th</option>
+                    </select>
+                  </FieldRow>
+
+                  <FieldRow id="scope" label="scope" required={false}>
+                    <Input id="scope" name="scope" className="bg-white" {...scope} />
+                  </FieldRow>
+                </div>
+              )}
+            </div>
+
             {/* Host + Resolved URL + Submit */}
             <div className="rounded-lg bg-sky-50 border border-sky-200 p-3.5 mb-5">
               <FieldRow id="host" label="Host" required>
@@ -321,84 +452,6 @@ export default function App() {
                 <Send className="h-4 w-4" />
                 Submit Binding Request
               </Button>
-            </div>
-
-            {/* Query String — OAuth params */}
-            <div className="rounded-lg border-2 border-slate-200 bg-slate-50/60 p-3.5">
-              <ChannelHeader
-                icon={Link2}
-                tone="slate"
-                kind="Query String"
-                title="OAuth parameters"
-                subtitle="appended to the endpoint URL as ?key=value"
-              />
-
-              <FieldRow id="client_id" label="client_id" required>
-                <Input id="client_id" name="client_id" className="bg-white" {...clientId} />
-              </FieldRow>
-
-              <FieldRow id="redirect_uri" label="redirect_uri" required>
-                <Input id="redirect_uri" name="redirect_uri" type="url" className="bg-white" {...redirectUri} />
-              </FieldRow>
-
-              <FieldRow id="state" label="state" required>
-                <Input id="state" name="state" className="bg-white" {...state} />
-              </FieldRow>
-
-              <FieldRow id="code_challenge" label="code_challenge" required>
-                <Input id="code_challenge" name="code_challenge" className="bg-white" {...codeChallenge} />
-              </FieldRow>
-
-              <FieldRow id="code_challenge_method" label="code_challenge_method" required>
-                <Input id="code_challenge_method" name="code_challenge_method" className="bg-white" {...codeChallengeMethod} />
-              </FieldRow>
-
-              <FieldRow id="device" label="device" required>
-                <select
-                  id="device"
-                  name="device"
-                  className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  {...device}
-                >
-                  <option value="web">web</option>
-                  <option value="iphone">iphone</option>
-                  <option value="android">android</option>
-                </select>
-              </FieldRow>
-
-              <FieldRow id="device_model" label="device_model" required>
-                <Input id="device_model" name="device_model" className="bg-white" {...deviceModel} />
-              </FieldRow>
-
-              <FieldRow id="device_id" label="device_id" required>
-                <Input id="device_id" name="device_id" className="bg-white" {...deviceId} />
-              </FieldRow>
-
-              <div className="flex items-center gap-3 mt-5 mb-3">
-                <span className="text-[10px] font-mono font-bold tracking-[0.12em] uppercase text-slate-500 shrink-0">
-                  Optional
-                </span>
-                <div className="h-px flex-1 bg-slate-200" />
-              </div>
-
-              <FieldRow id="latlong" label="latlong" required={false}>
-                <Input
-                  id="latlong"
-                  name="latlong"
-                  pattern="-?\d+(\.\d+)?,-?\d+(\.\d+)?"
-                  placeholder="lat,long"
-                  className="bg-white"
-                  {...latlong}
-                />
-              </FieldRow>
-
-              <FieldRow id="lang" label="lang" required={false}>
-                <Input id="lang" name="lang" className="bg-white" {...lang} />
-              </FieldRow>
-
-              <FieldRow id="scope" label="scope" required={false}>
-                <Input id="scope" name="scope" className="bg-white" {...scope} />
-              </FieldRow>
             </div>
           </form>
         </CardContent>
